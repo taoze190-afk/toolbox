@@ -1,0 +1,12 @@
+{
+  "adb": "C:/你的安卓SDK/platform-tools/adb.exe",
+  "androidSdk": "C:/你的安卓SDK",
+  "jdk": "C:/你的jdk-21",
+  "ffmpeg": "C:/ffmpeg/bin/ffmpeg.exe",
+  "chrome": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "selfHostBase": "https://你的域名:29443",
+  "selfTestBase": "https://你的域名:29433",
+  "serialPhone": "你的真机序列号",
+  "serialPad": "你的平板序列号",
+  "realDoc": "一份你自己的、稍长的中文 docx"
+}

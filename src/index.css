@@ -1,0 +1,140 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #f4f5f8;
+  --color-card: #ffffff;
+  --color-ink: #16181f;
+  --color-mute: #8b909c;
+  --color-line: #e6e8ee;
+  --color-soft: #f1f2f6;
+  --color-soft2: #e4e6ee;
+  --color-accent: #3f51de;
+  --color-good: #16a34a;
+  --color-bad: #dc2626;
+  --color-accent-soft: #eef0ff;
+  --radius-xl2: 18px;
+}
+
+/* 深色值挂在 data-theme 上而不是媒体查询里：手动选深色时也要生效，且只有一处定义。
+   Tailwind v4 的 @theme 编译进 @layer theme，非分层的规则恒赢，所以这里能覆盖。 */
+:root[data-theme='dark'] {
+  --color-bg: #0c0e14;
+  --color-card: #171a22;
+  --color-ink: #e8eaf0;
+  --color-mute: #868c9a;
+  --color-line: #262a35;
+  --color-soft: #222632;
+  --color-soft2: #2e3342;
+  --color-accent: #6d7ff5;
+  --color-accent-soft: #202643;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: system-ui, -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  background-image: radial-gradient(circle at 88% -10%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 34%);
+}
+
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea,
+select {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  background: linear-gradient(145deg, #7687ff, var(--color-accent));
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--color-accent) 27%, transparent);
+}
+
+.search-box:focus-within {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.tool-card {
+  min-height: 132px;
+  box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink) 4%, transparent);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.tool-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-line));
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--color-ink) 8%, transparent);
+}
+
+.section-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  color: var(--color-mute);
+  background: var(--color-soft);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.drop-active {
+  border-color: var(--color-accent) !important;
+  background: var(--color-accent-soft) !important;
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+.safe-t {
+  padding-top: max(env(safe-area-inset-top), 12px);
+}
+.safe-b {
+  padding-bottom: max(env(safe-area-inset-bottom), 12px);
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

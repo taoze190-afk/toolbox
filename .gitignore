@@ -1,0 +1,30 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# 本机开发时产生的验证素材与输出
+out/
+shots/
+fixtures/
+
+# 安装包与日志
+*.apk
+*.aab
+*.log
+
+# 密钥与生成物：token 绝不能上传，install.sh 由 tools/gen-install.mjs 生成
+server/.token
+server/install.sh
+tools/local.json
+.env
+.env.*
+
+# 编辑器与系统
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
