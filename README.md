@@ -9,6 +9,22 @@
 
 图片转 Word / Excel 走 tesseract.js 离线识别，中英文语言包随包，飞行模式也能用。
 
+## 界面
+
+宽屏左侧常驻工具栏，窄屏从首页两跳进入工具；深浅色跟随系统。
+
+![宽屏首页](docs/screens/wide-home.png)
+
+![手机首页](docs/screens/phone-home.png)
+
+![PDF 转 Word 参数面板](docs/screens/phone-tool-pdf-to-word.png)
+
+![设置页](docs/screens/phone-settings.png)
+
+下面这张是真机拍的，其余四张为无头 Chrome 渲染：
+
+![真机深色模式](docs/screens/android-dark-home.png)
+
 ## 技术栈
 
 React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Capacitor 8
