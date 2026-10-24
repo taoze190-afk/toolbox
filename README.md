@@ -13,9 +13,17 @@
 
 React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Capacitor 8
 
-`pdf-lib` 与 `pdfjs-dist` 处理 PDF，`sharp`/canvas 处理图片，`docx`/`exceljs`/`pptxgenjs` 生成 Office 文件。
+PDF 读写用 `pdfjs-dist` 与 `pdf-lib`，图片压缩走浏览器 canvas，GIF 用 `gifsicle-wasm-browser`，MP3 编码用 `@breezystack/lamejs`，Office 文件由 `mammoth`、`docx`、`exceljs`、`pptxgenjs` 读写。`sharp` 只在 `tools/` 里生成和解析夹具，不参与运行时。
 
 Word、PPT、Excel 转 PDF 由本地按版式重新排版，不是像素级还原。要原版式，在设置页接一个自建 LibreOffice 服务，或填 CloudConvert / ConvertAPI 的密钥。
+
+## 已知限制
+
+- Word 转 PDF 的产物每页是整幅图像，没有文字层；分栏、页眉页脚、目录域和脚注不参与排版
+- PDF 压缩同样整页转图，文字版 PDF 压完会丢文字层，工具会明确提示
+- PDF 转 Word / Excel / PPT 只重建文字与表格结构，版式和图片位置不保留
+- 只支持 .docx/.xlsx/.pptx，老的 .doc/.xls/.ppt 不认
+- 中文 OCR 识别率有限，语言包只随包了简体中性和英文
 
 ## 本地运行
 
