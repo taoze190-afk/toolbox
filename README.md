@@ -1,129 +1,161 @@
 # 全能工具箱
 
-17 个文档和图片工具，都在设备本机跑完，文件不上传。网页版和 Android 版是同一套代码。
+**一处完成 PDF、Office、图片与音频的日常处理。**
 
-## 工具清单
+基于浏览器的文件工具箱，提供 17 项压缩与转换工具。Web 与 Android 共用一套 React / TypeScript 代码，默认在设备本机处理文件，无需配置转换服务器即可使用。
 
-压缩：图片、PDF、GIF、音频，另有证件照片压缩和证件尺寸修改。
+从压缩上传材料、调整证件照，到整理扫描件、导出可编辑文档，选择工具、添加文件、调整参数后即可开始。对 Office 转 PDF 的版式有更高要求时，可按需接入自建 LibreOffice、CloudConvert 或 ConvertAPI 服务。
 
-转换：PDF 转 Word / Excel / PPT / 长图 / 逐页图，图片转 PDF / Word / Excel，Word / PPT / Excel 转 PDF。
+[问题反馈](https://github.com/taoze190-afk/toolbox/issues) · [工具注册表](src/tools/registry.ts) · [本机配置示例](tools/local.example.json)
 
-图片转 Word 和图片转 Excel 用 tesseract.js 离线识别，简体中文和英文的语言包打在包里，断网也能用。
+## 界面预览
 
-## 界面
+桌面端通过侧栏快速切换工具，移动端使用独立工具页；支持搜索、收藏与深浅色主题。
 
-宽屏左边一条常驻工具栏，窄屏从首页点两下进工具，深浅色跟系统走。
+![桌面端工具首页，无导入文件或示例结果](docs/screens/wide-home.png)
 
-![宽屏首页](docs/screens/wide-home.png)
+<details>
+<summary>查看手机端的 PDF 转 Word 参数界面</summary>
 
-![手机首页](docs/screens/phone-home.png)
+<img src="docs/screens/phone-tool-pdf-to-word.png" alt="手机端 PDF 转 Word，尚未选择文件" width="320" />
 
-![PDF 转 Word 参数面板](docs/screens/phone-tool-pdf-to-word.png)
+</details>
 
-![设置页](docs/screens/phone-settings.png)
+## 17 项工具
 
-最后一张是真机拍的，前四张是无头 Chrome 渲染。
+| 类别 | 工具 | 主要用途 |
+| --- | --- | --- |
+| 图片处理 · 3 项 | 图片压缩、证件照片压缩、证件尺寸修改 | 调整图片质量、目标体积、尺寸与证件照底色 |
+| 文件压缩 · 3 项 | PDF 压缩、GIF 压缩、音频压缩 | 逐页重建 PDF，调整 GIF 色彩 / 帧数 / 尺寸，重新编码 MP3 |
+| PDF 导出 · 5 项 | PDF 转 Word、PDF 转 Excel、PDF 转 PPT、PDF 转长图、PDF 逐页转图 | 提取内容生成办公文档，或将页面渲染为图片 |
+| 图片转文档 · 3 项 | 图片转 PDF、图片转 Word、图片转 Excel | 合并图片，或通过 OCR 生成文字文档与表格 |
+| Office 转 PDF · 3 项 | Word 转 PDF、PPT 转 PDF、Excel 转 PDF | 在本机重新排版，或使用已配置的远程转换服务 |
 
-![真机深色模式](docs/screens/android-dark-home.png)
+支持多文件处理的工具可一次添加多个文件，具体参数以各工具页面为准。处理过程中显示进度，可取消任务；完成后可保存结果，Android 端还可调用系统分享。
 
-## 用什么做的
+## 本机处理与远程转换
 
-React 19、TypeScript、Vite 6、Tailwind CSS 4，Android 壳是 Capacitor 8。
+| 使用方式 | 文件在哪里处理 | 适用范围 |
+| --- | --- | --- |
+| 默认本机模式 | 浏览器或 Android WebView 内 | 全部 17 项工具；无需服务密钥 |
+| 自建转换服务 | 你配置的 LibreOffice 服务 | 当前界面中的 Word / PPT / Excel 转 PDF |
+| 第三方转换 | 设置中选定的 CloudConvert 或 ConvertAPI | 当前界面中的 Word / PPT / Excel 转 PDF |
 
-读 PDF 用 pdfjs-dist，写 PDF 用 pdf-lib。图片走浏览器 canvas，GIF 交给 gifsicle-wasm-browser，MP3 用 @breezystack/lamejs 编码，Office 文件读写分别是 mammoth、docx、exceljs、pptxgenjs。sharp 只在 tools/ 里生成和解析夹具，运行时用不着它。
+**启用远程服务后，Office 转 PDF 会上传源文件到所配置的服务。** 其他工具继续使用本机实现。服务密钥与地址保存在本机设置中；远程转换失败或文件超过设置的远程体积上限时，会回退到本机处理，并在结果说明中标出原因。
 
-Word、PPT、Excel 转 PDF 是在本机重新排版的，版式接近但不是一比一。要一比一，就在设置页接一个自建 LibreOffice 服务，或者填 CloudConvert / ConvertAPI 的密钥。
+OCR 使用 Tesseract.js，默认随包提供简体中文与英文语言数据。本机模式下，识别过程不依赖在线 OCR 接口。构建时需要准备 Worker、WASM 和语言包资源；资源准备命令见下文。
 
-## 限制
+## 转换效果与边界
 
-- Word 转 PDF 出来每页是一整幅图，字选不中。分栏、页眉页脚、目录域、脚注不参与排版。
-- PDF 压缩同样是整页转图，原本有文字层的文件压完文字就选不中了，工具会提示这一句。
-- PDF 转 Word / Excel / PPT 只重建文字和表格，版式和图片位置不保留。
-- 只吃 .docx / .xlsx / .pptx，更老的 .doc / .xls / .ppt 不认。
-- 中文 OCR 认得不算准，语言包也只带了简体中文和英文。
+| 场景 | 当前实现的边界 |
+| --- | --- |
+| 本机 Word 转 PDF | 按内容重新排版，每页输出为图像，文字不可直接选择；分栏、页眉页脚、目录域与脚注不参与排版 |
+| 本机 PPT / Excel 转 PDF | 重新组织文字、图片或表格，不保证与原 Office 文档逐项还原；远程服务的实际结果也应核对 |
+| PDF 压缩 | 将页面渲染成图像后重建 PDF，原有可搜索文字层不会保留 |
+| PDF 转 Word / Excel / PPT | 按文字与坐标重建内容，扫描页可走 OCR；复杂版式、图片位置与表格结构可能需要手工整理 |
+| Office 输入格式 | 界面支持 `.docx` / `.xlsx` / `.pptx`，不接受旧式 `.doc` / `.xls` / `.ppt` |
+| OCR | 默认仅打包简体中文与英文；低清图片、复杂表格及数字识别需人工复核 |
+| 大文件与长图 | 受设备内存与浏览器画布尺寸限制；页数、图片分辨率和 OCR 清晰度会影响耗时与内存占用 |
 
-## 跑起来
+## 本地运行
 
-要 Node 22 或更高。
+需要 **Node.js 22 或更高版本**与 npm，Android 工具链使用的 Capacitor CLI 也要求 Node.js ≥ 22。
 
 ```bash
-npm install
-npm run dev        # http://127.0.0.1:5175
+git clone https://github.com/taoze190-afk/toolbox.git
+cd toolbox
+npm ci
+npm run assets
+npm run dev
 ```
 
-## 打 Android 包
+打开 <http://127.0.0.1:5175>。`npm run assets` 将 PDF / OCR 运行资源复制到 `public/`，缺失的默认语言包会在此步骤下载。完成后无需启动自建转换服务即可使用本机工具。
 
-JDK 21 和 Android SDK 的路径写在 tools/local.json 里（见最后一节）。
-
-```bash
-npm run apk            # debug
-npm run apk:release    # release
-```
-
-脚本依次跑 vite build、cap sync android、gradlew assemble，把包拷到仓库根目录，再用 aapt2 解开核对包名、版本号、17 个工具名和随包资源齐不齐。
-
-## 验证
+### 构建 Web 版本
 
 ```bash
 npm run typecheck
-npm run fixtures       # 往 fixtures/ 生成夹具
-npm run verify         # 37 条用例
+npm run build
+npm run preview
 ```
 
-verify 会起一个预览服务，用无头 Chrome 真跑每个工具，把产物拉回 Node 侧解析：页数、尺寸、体积、识别出来的文字，逐项对上才算过。构建日志写着 BUILD SUCCESSFUL 不算。
+构建产物位于 `dist/`，预览地址为 <http://localhost:4175>。`build` 已包含资源准备步骤；部署时保留整个目录结构，通过 HTTP / HTTPS 提供页面与 Worker、WASM、语言包文件。
 
-真机跑同一批用例：`node tools/build-apk.mjs --test` 打出带测试钩子的包，装上后跑 `node tools/device-verify.mjs`。
+## Android 构建
 
-## 自建转换服务
+Android 工程位于 [`android/`](android/)，最低系统版本由 `minSdkVersion = 24` 定义。
 
-`server/convert-server.mjs` 是 LibreOffice 的一层 HTTP 包装，只监听 127.0.0.1，带令牌鉴权，一次只处理一个任务。
+现有自动打包脚本使用 Windows 的 `gradlew.bat` 与 `aapt2.exe`。请先安装 JDK 21 和 Android SDK，并将 [`tools/local.example.json`](tools/local.example.json) 复制为 `tools/local.json`，填写 `jdk` 与 `androidSdk` 路径。工程编译使用 Android SDK 36；产物校验脚本查找 Build Tools 35.0.0 或 34.0.0。
 
 ```bash
-node tools/gen-install.mjs     # 生成 server/install.sh
+npm run assets
+npm run apk
 ```
 
-把 server/install.sh 拷到服务器上 `bash install.sh`，它装 LibreOffice 和中文字体、建 systemd 服务并限死内存、跑一轮自检，最后打印要填进 App 的地址和令牌。对外访问建议用 1panel 建反向代理套上 HTTPS，只映射一个高位端口。
+脚本依次构建 Web、同步 Capacitor、执行 Gradle，并核对 APK 内的版本号、工具名称和运行资源。Debug 包会复制到仓库根目录，命名为 `toolbox-<版本号>-debug.apk`。
 
-`server/.token` 是本机令牌，`.gitignore` 已经排除，别提交。
+`npm run apk:release` 使用 Release 构建分支。当前仓库尚未配置发布签名，脚本按 `app-release.apk` 检查产物；正式发布前需配置签名并确认输出路径。当前仓库没有已发布的 Release 安装包。
 
-## 目录
+## 开发与验证
 
-```
-src/                        43 个文件，约 6.9k 行
-  App.tsx  main.tsx         外壳与入口
-  index.css                 Tailwind 入口和设计变量
-  core/                     引擎层，12 个文件
-    pdf.ts                  读页、取文字块与坐标、按 dpi 渲染成图
-    scan.ts                 没有文字层的页渲染后识别，坐标反算回 pt
-    ocr.ts                  调 tesseract，放大、擦格线
-    images.ts               canvas 解码编码，二分压到指定体积
-    remote.ts               三个服务商的上传，失败逐文件回落本机
-    io.ts                   文件读写与保存，Android 走 Capacitor Filesystem
-    jobs.ts                 进度、取消、让出主线程
-    settings.ts theme.ts presets.ts format.ts assets.ts
-  tools/
-    registry.ts types.ts    注册表与参数面板的契约
-    defs/                   17 个工具，一个文件一个：面板加 run
-  ui/                       首页、侧栏、ToolView、设置、图标、hash 路由
+| 命令 | 用途 |
+| --- | --- |
+| `npm run assets` | 准备 PDF Worker、CMap、OCR WASM 与语言包 |
+| `npm run typecheck` | TypeScript 类型检查 |
+| `npm run fixtures` | 生成文件处理用的测试夹具 |
+| `npm run verify` | 使用无头 Chrome 执行工具，解析输出并检查内容、尺寸与体积 |
+| `npm run apk` | 构建并检查 Debug APK |
+| `npm run icon` | 生成应用图标 |
 
-public/                     随包二进制：pdfjs 的 worker 和 168 个 cmaps、
-                            tesseract 的 wasm、两个语言包
-tools/                      23 个脚本：构建 APK、生成夹具、无头与真机验证、
-                            生成安装脚本
-server/                     convert-server.mjs 服务本体、install.tpl.sh 安装
-                            脚本模板、fake-soffice.mjs 本机测试替身
-android/                    Capacitor 生成的安卓工程，只提交源码和图片资源
-docs/screens/               README 用的截图
+浏览器验证脚本连接 `http://127.0.0.1:5175` 的开发服务器，运行前需要启动它：
+
+```bash
+# 终端一
+npm run assets
+npm run dev
 ```
 
-## 本机配置
+```bash
+# 终端二
+npm run typecheck
+npm run fixtures
+npm run verify
+```
 
-tools/ 下的脚本要用到本机的 adb、JDK、Android SDK、ffmpeg、Chrome 路径和你的设备号。这些值不进仓库：把 tools/local.example.json 复制成 tools/local.json，改成自己的。缺哪一项，脚本会直接报出来。
+验证脚本需要本机 Chrome，生成夹具前还需配置 ffmpeg。路径可以在 `tools/local.json` 中配置，参照示例文件填写相应字段。真机验证还需要 adb 与设备号，相关脚本为 [`tools/device-verify.mjs`](tools/device-verify.mjs)。配置文件、测试输出与安装包均已列入 `.gitignore`。
 
-## 安装
+## 可选：自建 LibreOffice 服务
 
-Releases 里有 debug 签名的 APK，装上就能用，文件不出设备。
+[`server/convert-server.mjs`](server/convert-server.mjs) 提供带令牌鉴权的 HTTP 转换接口，默认监听 `127.0.0.1:8790`，串行调用 LibreOffice 处理 Office 转 PDF。前端通过设置页的「自建服务」接入。
 
-## 许可
+仓库提供 Linux 安装脚本模板，可在本机生成：
 
-没附许可证文件，版权归作者所有。要用的先来问。
+```bash
+node tools/gen-install.mjs
+```
+
+安装模板面向 Debian 12 / 13。检查生成的 `server/install.sh` 后，将它复制到服务器以 root 执行；脚本会安装 LibreOffice 与字体、配置 systemd 并运行自检，默认服务端口为 `29000`。外部设备访问时，通过 HTTPS 反向代理暴露服务，在工具箱设置中填写地址与令牌。
+
+服务只用于已配置的远程转换。本机文件处理不需要部署这一组件。请勿将 `server/.token`、生成的安装脚本或 `tools/local.json` 提交到仓库。
+
+## 技术与代码导航
+
+React 19 · TypeScript · Vite 6 · Tailwind CSS 4 · Capacitor 8
+
+| 目录 | 内容 |
+| --- | --- |
+| [`src/ui/`](src/ui/) | 首页、侧栏、工具参数、结果保存、设置与主题 |
+| [`src/tools/`](src/tools/) | 工具注册表、参数契约与 17 个工具实现 |
+| [`src/core/`](src/core/) | PDF、OCR、图像、文件读写、任务取消与远程服务适配 |
+| [`public/`](public/) | 随应用分发的 PDF Worker、CMap、OCR WASM 与语言包 |
+| [`android/`](android/) | Capacitor Android 工程 |
+| [`tools/`](tools/) | 资源准备、夹具生成、APK 构建和浏览器 / 真机验证 |
+| [`server/`](server/) | 可选 LibreOffice 转换服务及安装模板 |
+
+PDF 读取与生成使用 PDF.js / pdf-lib；OCR 使用 Tesseract.js；Office 文件处理使用 mammoth、docx、exceljs 与 pptxgenjs。GIF 使用 gifsicle WASM，MP3 编码使用 lamejs；sharp 仅用于开发脚本。
+
+提交问题时，请说明工具名称、输入格式、浏览器或设备、操作步骤，以及使用的是本机还是远程模式。复现文件请使用可公开的脱敏材料。
+
+## 许可说明
+
+当前仓库未附许可证文件。使用、修改或再分发前，请先联系作者确认授权范围。
